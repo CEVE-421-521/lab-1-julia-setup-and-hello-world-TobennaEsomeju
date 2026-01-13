@@ -1,0 +1,344 @@
+---
+title: "Lab 1: Julia Setup & Hello World"
+subtitle: "CEVE 421/521"
+date: 2026-01-16
+engine: julia
+status: published
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-copy: false
+    code-block-bg: "#f8f8f8"
+    code-block-border-left: "#e1e4e5"
+    theme:
+      - simplex
+      - _assets/sass/custom.scss
+    number-sections: true
+    fig-format: svg
+  typst:
+    fontsize: 11pt
+    margin:
+      x: 1in
+      y: 1in
+    number-sections: true
+    fig-format: svg
+
+execute:
+  exeflags: ["+1.12", "--project=@.", "--threads=auto"]
+  cache: true
+  freeze: auto
+
+code-overflow: wrap
+code-line-numbers: false
+code-block-font-size: "0.85em"
+code-annotations: hover
+---
+
+## Overview
+
+Welcome to CEVE 421/521!
+This lab will guide you through setting up the software tools we'll use throughout the semester.
+By the end of this lab, you'll have a working Julia environment and will create your first visualization.
+
+
+## Pre-Lab Requirements
+
+Complete these steps **before** coming to lab.
+Budget 30-60 minutes for installation.
+If you get stuck, note where you stopped and we'll troubleshoot in class.
+
+### Create a GitHub Account
+
+If you don't already have one, create a free account at [github.com](https://github.com).
+Use your Rice email to get access to additional student benefits.
+
+### Accept the GitHub Classroom Assignment
+
+1. Go to Canvas and find the Lab 1 assignment
+2. Click the GitHub Classroom link
+3. Accept the assignment to create your personal repository
+4. You'll get a link to your new repo (e.g., `CEVE-421-521/lab-01-S26-yourname`)
+
+### Install GitHub Desktop
+
+Download and install [GitHub Desktop](https://desktop.github.com/).
+This provides a visual interface for Git operations.
+
+::: {.callout-tip}
+Experienced users can use the command line or another Git client, but GitHub Desktop is recommended for this course.
+:::
+
+### Clone Your Repository
+
+1. Open GitHub Desktop
+2. Click "Clone a repository from the Internet"
+3. Find your lab repository under your GitHub account
+4. **Important**: Choose a local path that is NOT in OneDrive, Google Drive, iCloud, or any synced folder
+   - Recommended: Create a folder like `~/CEVE-421-521/` and clone into it
+   - Your path should be something like `~/CEVE-421-521/lab-01-S26-yourname`
+
+::: {.callout-warning}
+Cloud sync services (OneDrive, Google Drive, Dropbox) can corrupt Git repositories.
+Always store code repositories in a non-synced folder.
+:::
+
+### Install Visual Studio Code
+
+Download and install [VS Code](https://code.visualstudio.com/).
+Then install the Julia extension:
+
+1. Open VS Code
+2. Click the Extensions icon in the left sidebar (or press `Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Search for "Julia"
+4. Install the "Julia" extension by julialang
+
+### Install Julia via Juliaup
+
+We use [Juliaup](https://github.com/JuliaLang/juliaup) to manage Julia installations.
+
+**Windows:**
+Open PowerShell and run:
+
+```powershell
+winget install julia -s msstore
+```
+
+**macOS/Linux:**
+Open Terminal and run:
+
+```bash
+curl -fsSL https://install.julialang.org | sh
+```
+
+After installation, set Julia 1.12 as the default:
+
+```bash
+juliaup add 1.12
+juliaup default 1.12
+```
+
+Verify your installation by opening a new terminal and running:
+
+```bash
+julia --version
+```
+
+You should see `julia version 1.12.x`.
+
+::: {.callout-tip}
+## CEVE 543 Students
+
+We used Julia 1.11 in CEVE 543 last semester.
+If you don't install version 1.12 here, you'll run into errors later.
+:::
+
+### Install Quarto
+
+Download and install [Quarto](https://quarto.org/docs/get-started/).
+This is the document rendering system we use for labs.
+
+Verify installation:
+
+```bash
+quarto --version
+```
+
+### Set Up GitHub Copilot (Optional but Recommended)
+
+GitHub Copilot is an AI coding assistant that can help you write code.
+Students get free access:
+
+1. Apply for the [GitHub Student Developer Pack](https://education.github.com/pack)
+2. Once approved, install the "GitHub Copilot" extension in VS Code
+3. Sign in with your GitHub account
+
+You are also welcome to explore other AI coding tools such as Claude Code and OpenAI Codex, but these generally have no, or limited, free plans.
+
+### Activate the Julia Environment
+
+1. Open your cloned lab folder in VS Code. You can do this directly from GitHub desktop.
+2. Open the VS Code terminal (`Ctrl+`` ` or `Cmd+`` `)
+3. Start Julia by typing `julia`
+4. Activate and instantiate the project:
+
+```julia
+using Pkg
+Pkg.activate(".")
+Pkg.instantiate()
+```
+
+This installs all required packages for the lab.
+
+### Verify Your Setup
+
+In VS Code, open the terminal and run:
+
+```bash
+quarto render index.qmd
+```
+
+This should produce two files:
+
+- `index.html` (web version)
+- `index.pdf` (PDF version via Typst)
+
+If both files are created without errors, your setup is complete!
+
+## In-Class Workflow
+
+Now that your environment is set up, let's complete the lab exercises.
+
+### Setup
+
+This section loads the tools (called "packages") we need for this lab.
+
+```{julia}
+#| output: false
+if !isfile("Manifest.toml") # <1>
+    using Pkg # <2>
+    Pkg.instantiate() # <3>
+end # <4>
+```
+
+1. Check if a file called `Manifest.toml` exists in the current folder. This file tracks which package versions are installed.
+2. Load Julia's built-in package manager, called `Pkg`.
+3. Install all packages listed in `Project.toml`. This only runs if `Manifest.toml` doesn't exist yet.
+4. `end` closes the `if` block. Julia uses `if ... end` instead of curly braces like some other languages.
+
+We'll load a popular plotting library
+
+```{julia}
+#| output: false
+using CairoMakie # <1>
+```
+
+1. Load the CairoMakie package, which we'll use to create plots. `using` makes all the functions from that package available.
+
+### Exercises
+
+#### Exercise 1: Identify Yourself
+
+Fill in your name, NetID, and GitHub username below.
+In Julia, we store values in **variables** using the `=` sign.
+
+```{julia}
+name = "James Doss-Gollin" # <1>
+netid = "jd82" # <2>
+github_username = "jdossgollin" # <3>
+```
+
+1. Create a variable called `name` and assign it a **string** (text in quotes). Replace with your name!
+2. Create another variable called `netid`. Strings can use either double quotes `"..."` or single quotes `'...'`.
+3. Your GitHub username is what appears in your repository URL (e.g., `github.com/jdossgollin`).
+
+Now, Quarto will automatically print a greeting using **string interpolation**:
+
+```{julia}
+println("Hello! My name is $name and my NetID is $netid.") # <1>
+```
+
+1. `println()` prints text to the screen. The `$` symbol inside a string inserts the value of a variable. This is called **string interpolation** - Julia replaces `$name` with the actual value stored in `name`.
+
+#### Exercise 2: Generate Data
+
+Let's create some data to visualize.
+We'll generate a noisy sine wave - this simulates real-world data that has measurement error.
+
+```{julia}
+#| output: false
+x = range(0, 2pi, length=50) # <1>
+noise = 0.3 * randn(length(x)) # <2>
+y_noisy = sin.(x) .+ noise # <3>
+y_true = sin.(x) # <4>
+```
+
+1. Create 50 evenly-spaced numbers from 0 to 2π (about 6.28). `range()` is like making tick marks on a ruler. `pi` is a built-in constant in Julia.
+2. Generate random "noise" values. `randn(n)` creates `n` random numbers from a normal distribution (bell curve centered at 0). `length(x)` returns how many elements are in `x` (50). Multiplying by 0.3 makes the noise smaller.
+3. Calculate noisy y-values. The **dot** `.` before `sin` and `+` means "apply this operation to **each element**" - this is called **broadcasting**. Without the dot, Julia would try to take the sine of the whole array at once (which doesn't work). So `sin.(x)` computes sine for all 50 x-values.
+4. Calculate the "true" sine values without noise, for comparison.
+
+
+#### Exercise 3: Create a Visualization
+
+Now let's plot the noisy data alongside the true sine function.
+CairoMakie uses a "grammar of graphics" approach: you build plots layer by layer.
+
+```{julia}
+#| label: fig-sine
+#| fig-cap: "Noisy sine wave data with true function overlay"
+let # <1>
+    fig = Figure() # <2>
+    ax = Axis(fig[1, 1]; xlabel="x", ylabel="y", title="Noisy Sine Wave") # <3>
+    scatter!(ax, x, y_noisy; label="Noisy data", markersize=8) # <4>
+    lines!(ax, x, y_true; linestyle=:dash, linewidth=2, label="True function") # <5>
+    axislegend(ax) # <6>
+    fig # <7>
+end # <1>
+```
+
+1. `let ... end` creates a temporary scope. Variables created inside (like `fig` and `ax`) won't clutter your workspace. This is a good habit for plotting code.
+2. Create an empty figure - think of it as a blank canvas to draw on.
+3. Add an axis (the plotting area with x/y coordinates) to the figure. `fig[1, 1]` means "row 1, column 1" of a grid layout. The semicolon `;` separates positional arguments from **keyword arguments** like `xlabel=`, `ylabel=`, and `title=`.
+4. Add scattered points. The `!` at the end of `scatter!` is a Julia convention meaning "this function modifies something" (here, it adds to the axis). We pass the axis, x-coordinates, y-coordinates, and styling options.
+5. Add a dashed line for the true function. `:dash` is a **symbol** - a special Julia type for named options (look up "Julia symbols" for more).
+6. Add a legend that automatically uses the `label` text from each plot layer.
+7. Return the figure so it displays. In Julia, the last expression in a block is automatically returned.
+
+## Submission
+
+Follow these steps to submit your completed lab:
+
+### Push to GitHub
+
+In GitHub Desktop:
+
+1. Review your changes in the "Changes" tab
+2. Write a summary (e.g., "Complete Lab 1 exercises")
+3. Click "Commit to main"
+4. Click "Push origin" to upload to GitHub
+
+### Handle the Formatter PR
+
+After you push, a GitHub Action will check your code formatting.
+If any changes are needed:
+
+1. Go to your repository on GitHub
+2. Look for a Pull Request titled "Format Julia code"
+3. If one exists, click "Merge pull request" and confirm
+
+### Pull Changes to Your Computer
+
+After merging the formatter PR (or if there was no PR), you need to sync your local copy:
+
+1. Open GitHub Desktop
+2. Click "Fetch origin" in the top bar (this checks for remote changes)
+3. If changes are found, click "Pull origin" to download them
+4. Your local files are now up to date with GitHub
+
+::: {.callout-tip}
+Always pull before you start working and after merging any PRs.
+This keeps your local copy in sync with GitHub.
+:::
+
+### Re-render and Submit
+
+After pulling any changes:
+
+```bash
+quarto render index.qmd
+```
+
+Upload the generated `index.pdf` file to the Lab 1 assignment on Canvas.
+
+## Summary
+
+In this lab, you:
+
+- Set up a complete Julia development environment
+- Learned the lab workflow: clone → code → push → merge PR → render → submit
+- Created your first Julia visualization using CairoMakie
+
+This workflow will be the same for all labs this semester.
+If you have any issues, come to office hours or post on the discussion board.
