@@ -226,9 +226,9 @@ Fill in your name, NetID, and GitHub username below.
 In Julia, we store values in **variables** using the `=` sign.
 
 ```{julia}
-name = "James Doss-Gollin" # <1>
-netid = "jd82" # <2>
-github_username = "jdossgollin" # <3>
+name = "Tobenna Esomeju" # <1>
+netid = "toe1" # <2>
+github_username = "TobennaEsomeju" # <3>
 ```
 
 1. Create a variable called `name` and assign it a **string** (text in quotes). Replace with your name!
