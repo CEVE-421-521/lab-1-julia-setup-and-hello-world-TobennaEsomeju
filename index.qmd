@@ -194,9 +194,11 @@ Now that your environment is set up, let's complete the lab exercises.
 
 This section loads the tools (called "packages") we need for this lab.
 
+
 ```{julia}
 #| output: false
-if !isfile("Manifest.toml") # <1>
+working_dir = dirname(@__FILE__)
+if !isfile(joinpath(working_dir, "Manifest.toml")) # <1>
     using Pkg # <2>
     Pkg.instantiate() # <3>
 end # <4>
